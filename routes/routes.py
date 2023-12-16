@@ -91,7 +91,7 @@ def create_employee(employee: EmployeeModel, db: Session = Depends(get_db)):
     db.refresh(new_employee)
     return new_employee
 
-# CRUD operations for Schedule
+## CRUD operations for Schedule
 @router.get("/schedules/", response_model=list[ScheduleModel])
 def get_all_schedules(db: Session = Depends(get_db)):
     schedules = db.query(Schedule).all()
@@ -112,6 +112,36 @@ def get_schedule_by_name(schedule_name: str, db: Session = Depends(get_db)):
         return schedule
     else:
         raise HTTPException(status_code=404, detail="Schedule not found")
+
+@router.post("/schedules/", response_model=ScheduleModel)
+def create_schedule(schedule: ScheduleModel, db: Session = Depends(get_db)):
+    new_schedule = Schedule(**schedule.dict())
+    db.add(new_schedule)
+    db.commit()
+    db.refresh(new_schedule)
+    return new_schedule
+
+@router.put("/schedules/{schedule_id}")
+def update_schedule(schedule_id: int, updated_schedule: ScheduleModel, db: Session = Depends(get_db)):
+    schedule = db.query(Schedule).filter(Schedule.id == schedule_id).first()
+    if schedule:
+        schedule.name = updated_schedule.name
+        db.commit()
+        db.refresh(schedule)
+        return schedule
+    else:
+        raise HTTPException(status_code=404, detail="Schedule not found")
+
+@router.delete("/schedules/{schedule_id}")
+def delete_schedule(schedule_id: int, db: Session = Depends(get_db)):
+    schedule = db.query(Schedule).filter(Schedule.id == schedule_id).first()
+    if schedule:
+        db.delete(schedule)
+        db.commit()
+        return {"message": "Schedule deleted"}
+    else:
+        raise HTTPException(status_code=404, detail="Schedule not found")
+
 
 # CRUD operations for Supervisor
 @router.get("/supervisors/", response_model=list[SupervisorModel])
