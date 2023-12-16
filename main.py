@@ -13,6 +13,7 @@ app = FastAPI()
 origins = [
     "http://localhost",
     "http://localhost:3000",  # Agrega la URL de tu aplicación React
+    "https://main.d37yeuc6iylap9.amplifyapp.com/"
 ]
 
 app.add_middleware(
