@@ -4,6 +4,7 @@ from sqlalchemy.orm import relationship
 from datetime import datetime
 from sqlalchemy.ext.declarative import declarative_base
 from pydantic import BaseModel
+from typing import Optional
 
 Base = declarative_base()
 
@@ -14,8 +15,8 @@ class Area(Base):
     employees = relationship("Employee", back_populates="area")
 
 class AreaModel(BaseModel):
-    id: int
     name: str
+    
 
 class Employee(Base):
     __tablename__ = "employees"
