@@ -15,6 +15,14 @@ def get_all_areas(db: Session = Depends(get_db)):
     areas = db.query(Area).all()
     return areas
 
+@router.post("/area/", response_model=AreaModel)
+def create_area(area: AreaModel, db: Session = Depends(get_db)):
+    db_area = Area(**area.dict())
+    db.add(db_area)
+    db.commit()
+    db.refresh(db_area)
+    return db_area
+
 '''
 @app.post("/employees/", response_model=EmployeeModel)
 def create_employee(employee: EmployeeModel, db: Session = Depends(get_db)):
