@@ -91,6 +91,31 @@ def create_employee(employee: EmployeeModel, db: Session = Depends(get_db)):
     db.refresh(new_employee)
     return new_employee
 
+@router.put("/employees/{employee_id}")
+def update_employee(employee_id: int, updated_employee: EmployeeModel, db: Session = Depends(get_db)):
+    employee = db.query(Employee).filter(Employee.id == employee_id).first()
+    if employee:
+        employee.name = updated_employee.name
+        employee.area_id = updated_employee.area_id
+        employee.supervisor_id = updated_employee.supervisor_id
+        employee.schedule_id = updated_employee.schedule_id
+        db.commit()
+        db.refresh(employee)
+        return employee
+    else:
+        raise HTTPException(status_code=404, detail="Employee not found")
+
+@router.delete("/employees/{employee_id}")
+def delete_employee(employee_id: int, db: Session = Depends(get_db)):
+    employee = db.query(Employee).filter(Employee.id == employee_id).first()
+    if employee:
+        db.delete(employee)
+        db.commit()
+        return {"message": "Employee deleted"}
+    else:
+        raise HTTPException(status_code=404, detail="Employee not found")
+
+
 ## CRUD operations for Schedule
 @router.get("/schedules/", response_model=list[ScheduleModel])
 def get_all_schedules(db: Session = Depends(get_db)):
@@ -172,3 +197,25 @@ def create_supervisor(supervisor: SupervisorModel, db: Session = Depends(get_db)
     db.commit()
     db.refresh(new_supervisor)
     return new_supervisor
+
+@router.put("/supervisors/{supervisor_id}")
+def update_supervisor(supervisor_id: int, updated_supervisor: SupervisorModel, db: Session = Depends(get_db)):
+    supervisor = db.query(Supervisor).filter(Supervisor.id == supervisor_id).first()
+    if supervisor:
+        supervisor.name = updated_supervisor.name
+        db.commit()
+        db.refresh(supervisor)
+        return supervisor
+    else:
+        raise HTTPException(status_code=404, detail="Supervisor not found")
+
+@router.delete("/supervisors/{supervisor_id}")
+def delete_supervisor(supervisor_id: int, db: Session = Depends(get_db)):
+    supervisor = db.query(Supervisor).filter(Supervisor.id == supervisor_id).first()
+    if supervisor:
+        db.delete(supervisor)
+        db.commit()
+        return {"message": "Supervisor deleted"}
+    else:
+        raise HTTPException(status_code=404, detail="Supervisor not found")
+
